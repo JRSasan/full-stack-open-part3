@@ -37,11 +37,12 @@ if (process.argv.length === 5){
     number: process.argv[4],
     })
 
-    person.save().then(result => {
-    console.log(`added ${result.name} number ${result.number} to phonebook`)
-    mongoose.connection.close()
-})
-.catch((err) => console.log(err))
+    person.save()
+    .then(result => {
+        console.log(`added ${result.name} number ${result.number} to phonebook`)
+        mongoose.connection.close()
+    })
+    .catch((err) => console.log(err))
 }
 
 
