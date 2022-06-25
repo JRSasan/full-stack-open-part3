@@ -16,11 +16,14 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :d
 
 
 app.get('/info', (request, response) => {
-    const entries = persons.length
-    const currentDate = new Date(Date.now())
-    response.send(
-    `<p>Phonebook has info for ${entries} people<p>
-    <p>${currentDate.toUTCString()}</p>`)
+    Person.countDocuments({})
+        .then(result => {
+            const entries = result
+            const currentDate = new Date(Date.now())
+            response.send(
+            `<p>Phonebook has info for ${entries} people<p>
+            <p>${currentDate.toUTCString()}</p>`)
+        })
 })
 
 app.get('/api/persons', (request, response) => {
@@ -65,6 +68,24 @@ app.post('/api/persons', (request, response) => {
         .then(savedNote => {
             response.json(savedNote)
     })
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const person = {
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+        .then(updatedPerson => {
+            if (updatedPerson) {
+                response.json(updatedPerson)
+            } else {
+                response.status(404).end()
+            } 
+        })
+        .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
